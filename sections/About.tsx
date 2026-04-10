@@ -8,28 +8,7 @@ const Lanyard = React.lazy(() => import('../components/Lanyard'));
 
 const About: React.FC = () => {
   const containerRef = useRef<HTMLDivElement>(null!);
-  const [loadEngine, setLoadEngine] = React.useState(false);
-
-  React.useEffect(() => {
-    const section = containerRef.current;
-    if (!section) return;
-
-    let timer: number | null = null;
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        if (!entry.isIntersecting) return;
-        timer = window.setTimeout(() => setLoadEngine(true), 200);
-        observer.disconnect();
-      },
-      { rootMargin: '300px' }
-    );
-
-    observer.observe(section);
-    return () => {
-      observer.disconnect();
-      if (timer) window.clearTimeout(timer);
-    };
-  }, []);
+  const loadEngine = true;
 
   useLayoutEffect(() => {
     const ctx = gsap.context(() => {

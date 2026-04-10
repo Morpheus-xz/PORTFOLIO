@@ -7,6 +7,11 @@ const GhostCursor = React.lazy(() => import('../components/GhostCursor'));
 const Contact: React.FC = () => {
   const sectionRef = React.useRef<HTMLElement>(null);
   const [loadCursor, setLoadCursor] = React.useState(false);
+  const isSafari = React.useMemo(() => {
+    if (typeof navigator === 'undefined') return false;
+    const ua = navigator.userAgent;
+    return /Safari/i.test(ua) && !/Chrome|CriOS|Edg|OPR|FxiOS/i.test(ua);
+  }, []);
 
   React.useEffect(() => {
     const section = sectionRef.current;
@@ -35,17 +40,18 @@ const Contact: React.FC = () => {
         <React.Suspense fallback={null}>
           <GhostCursor 
             color="#B19EEF"
-            brightness={0.9}
+            brightness={isSafari ? 0.72 : 0.9}
             trailLength={50}
             inertia={0.5}
-            bloomStrength={0.045}
-            bloomRadius={0.65}
-            bloomThreshold={0.14}
+            bloomStrength={isSafari ? 0.022 : 0.045}
+            bloomRadius={isSafari ? 0.45 : 0.65}
+            bloomThreshold={isSafari ? 0.2 : 0.14}
             fadeDelayMs={1000}
             fadeDurationMs={1500}
             zIndex={1}
-            edgeIntensity={0.15}
-            grainIntensity={0.015}
+            edgeIntensity={isSafari ? 0.1 : 0.15}
+            grainIntensity={isSafari ? 0.008 : 0.015}
+            maxDevicePixelRatio={isSafari ? 0.4 : 0.5}
           />
         </React.Suspense>
       )}

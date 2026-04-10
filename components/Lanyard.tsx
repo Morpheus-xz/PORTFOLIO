@@ -16,9 +16,7 @@ import './Lanyard.css';
 extend({ MeshLineGeometry, MeshLineMaterial });
 
 export default function Lanyard({ position = [0, 0, 30], gravity = [0, -40, 0], fov = 20, transparent = true }) {
-  const wrapperRef = useRef<HTMLDivElement>(null);
   const [isMobile, setIsMobile] = useState(() => typeof window !== 'undefined' && window.innerWidth < 768);
-  const [isActive, setIsActive] = useState(true);
 
   useEffect(() => {
     const handleResize = () => setIsMobile(window.innerWidth < 768);
@@ -26,30 +24,17 @@ export default function Lanyard({ position = [0, 0, 30], gravity = [0, -40, 0], 
     return () => window.removeEventListener('resize', handleResize);
   }, []);
 
-  useEffect(() => {
-    const target = wrapperRef.current;
-    if (!target) return;
-
-    const observer = new IntersectionObserver(
-      ([entry]) => setIsActive(entry.isIntersecting),
-      { rootMargin: '420px 0px 420px 0px' }
-    );
-    observer.observe(target);
-    return () => observer.disconnect();
-  }, []);
-
   return (
-    <div ref={wrapperRef} className="lanyard-wrapper">
+    <div className="lanyard-wrapper">
       <Canvas
         camera={{ position: position, fov: fov }}
-        dpr={[1, isMobile ? 1.5 : 2]}
-        frameloop={isActive ? 'always' : 'never'}
+        dpr={[1, isMobile ? 1.35 : 1.65]}
         gl={{ alpha: transparent }}
         onCreated={({ gl }) => gl.setClearColor(new THREE.Color(0x000000), transparent ? 0 : 1)}
       >
         <ambientLight intensity={Math.PI} />
-        <Physics gravity={gravity} timeStep={isMobile ? 1 / 30 : 1 / 60} paused={!isActive}>
-          <Band isMobile={isMobile} active={isActive} />
+        <Physics gravity={gravity} timeStep={isMobile ? 1 / 30 : 1 / 60}>
+          <Band isMobile={isMobile} />
         </Physics>
         <Environment blur={0.75}>
           <Lightformer
@@ -86,7 +71,7 @@ export default function Lanyard({ position = [0, 0, 30], gravity = [0, -40, 0], 
   );
 }
 
-function Band({ maxSpeed = 50, minSpeed = 0, isMobile = false, active = true }) {
+function Band({ maxSpeed = 50, minSpeed = 0, isMobile = false }) {
   const cardBaseScale = 2.38;
   const cardBaseOffset: [number, number, number] = [0, -1.14, -0.05];
   const band = useRef() as any,
@@ -135,7 +120,6 @@ function Band({ maxSpeed = 50, minSpeed = 0, isMobile = false, active = true }) 
   }, [hovered, dragged]);
 
   useFrame((state, delta) => {
-    if (!active && !dragged) return;
     idleTime.current += delta;
 
     if (dragged) {

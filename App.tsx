@@ -87,7 +87,14 @@ const App: React.FC = () => {
 
       {!loading && (
         <div className="relative z-10 w-full">
-          <SplashCursor />
+          <SplashCursor
+            SIM_RESOLUTION={96}
+            DYE_RESOLUTION={1024}
+            PRESSURE_ITERATIONS={16}
+            SPLAT_FORCE={5200}
+            MAX_PIXEL_RATIO={1}
+            TARGET_FPS={55}
+          />
           <Navbar />
           <div id="smooth-wrapper">
             <Hero />

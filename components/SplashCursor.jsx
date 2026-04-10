@@ -15,7 +15,9 @@ function SplashCursor({
   SHADING = true,
   COLOR_UPDATE_SPEED = 10,
   BACK_COLOR = { r: 0.5, g: 0, b: 0 },
-  TRANSPARENT = true
+  TRANSPARENT = true,
+  MAX_PIXEL_RATIO = 1,
+  TARGET_FPS = 55
 }) {
   const canvasRef = useRef(null);
   const animationFrameId = useRef(null);
@@ -671,26 +673,25 @@ function SplashCursor({
 
     updateKeywords();
     initFramebuffers();
-    let lastUpdateTime = Date.now();
+    let lastUpdateTime = typeof performance !== 'undefined' ? performance.now() : Date.now();
     let colorUpdateTimer = 0.0;
+    const frameInterval = 1000 / Math.max(24, TARGET_FPS);
 
-    function updateFrame() {
+    function updateFrame(now = (typeof performance !== 'undefined' ? performance.now() : Date.now())) {
       if (!isActive) return;
-      const dt = calcDeltaTime();
+      const elapsed = now - lastUpdateTime;
+      if (elapsed < frameInterval) {
+        animationFrameId.current = requestAnimationFrame(updateFrame);
+        return;
+      }
+      lastUpdateTime = now - (elapsed % frameInterval);
+      const dt = Math.min(elapsed / 1000, 0.02);
       if (resizeCanvas()) initFramebuffers();
       updateColors(dt);
       applyInputs();
       step(dt);
       render(null);
       animationFrameId.current = requestAnimationFrame(updateFrame);
-    }
-
-    function calcDeltaTime() {
-      let now = Date.now();
-      let dt = (now - lastUpdateTime) / 1000;
-      dt = Math.min(dt, 0.016666);
-      lastUpdateTime = now;
-      return dt;
     }
 
     function resizeCanvas() {
@@ -948,7 +949,7 @@ function SplashCursor({
     }
 
     function scaleByPixelRatio(input) {
-      const pixelRatio = window.devicePixelRatio || 1;
+      const pixelRatio = Math.min(window.devicePixelRatio || 1, MAX_PIXEL_RATIO);
       return Math.floor(input * pixelRatio);
     }
 

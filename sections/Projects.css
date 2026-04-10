@@ -1,0 +1,196 @@
+.projects-section {
+  isolation: isolate;
+}
+
+.projects-surface {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  background:
+    linear-gradient(180deg, rgba(0, 0, 0, 0.86) 0%, rgba(0, 0, 0, 0.58) 22%, rgba(0, 0, 0, 0.36) 42%, rgba(0, 0, 0, 0.72) 100%),
+    radial-gradient(circle at 50% 16%, rgba(177, 158, 239, 0.08), transparent 28%);
+}
+
+.projects-header {
+  position: relative;
+  padding: 0;
+}
+
+.projects-header::after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  bottom: -1.4rem;
+  width: min(34rem, 72vw);
+  height: 1px;
+  transform: translateX(-50%);
+  background: linear-gradient(90deg, transparent, rgba(177, 158, 239, 0.68), rgba(3, 179, 195, 0.3), transparent);
+  opacity: 0.72;
+  box-shadow: 0 0 24px rgba(177, 158, 239, 0.14);
+}
+
+.projects-header-copy {
+  text-wrap: balance;
+  text-shadow: 0 0 18px rgba(0, 0, 0, 0.82);
+}
+
+.projects-entry-veil {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 2;
+  height: min(22vh, 15rem);
+  pointer-events: none;
+  background:
+    linear-gradient(180deg, #000 0%, rgba(0, 0, 0, 0.68) 18%, transparent 100%),
+    radial-gradient(ellipse at 50% 0%, rgba(177, 158, 239, 0.14), transparent 58%);
+}
+
+.projects-entry-veil::before {
+  content: "";
+  position: absolute;
+  left: 50%;
+  top: -4rem;
+  width: min(50rem, 92vw);
+  height: 10rem;
+  transform: translateX(-50%);
+  border-radius: 50%;
+  background:
+    radial-gradient(ellipse, rgba(177, 158, 239, 0.22), transparent 62%),
+    radial-gradient(ellipse, rgba(3, 179, 195, 0.08), transparent 72%);
+  filter: blur(14px);
+  opacity: 0.62;
+  mix-blend-mode: screen;
+  animation: projects-entry-bloom 6.5s ease-in-out infinite alternate;
+}
+
+.projects-entry-veil::after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  top: 1rem;
+  width: min(32rem, 68vw);
+  height: 1px;
+  transform: translateX(-50%);
+  background: linear-gradient(90deg, transparent, rgba(177, 158, 239, 0.54), rgba(3, 179, 195, 0.24), transparent);
+  box-shadow: 0 0 20px rgba(177, 158, 239, 0.12);
+  animation: projects-entry-line 4.8s cubic-bezier(0.5, 0, 0.2, 1) infinite;
+}
+
+.projects-grid {
+  align-items: stretch;
+}
+
+.project-card::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  opacity: 0;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.04), transparent 24%);
+  transition: opacity 300ms ease;
+}
+
+.project-card:hover::before {
+  opacity: 1;
+}
+
+.project-image-wrap::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background:
+    linear-gradient(180deg, rgba(0, 0, 0, 0.1), transparent 28%, rgba(0, 0, 0, 0.24) 100%),
+    radial-gradient(circle at 50% 22%, transparent, rgba(0, 0, 0, 0.16) 78%);
+}
+
+.project-body {
+  display: grid;
+  grid-template-rows: auto auto auto minmax(7.75rem, 1fr) auto;
+  align-content: start;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.03), transparent 22%),
+    rgba(5, 5, 8, 0.94);
+}
+
+.project-meta {
+  min-height: 1.25rem;
+}
+
+.project-title {
+  min-height: 3.8rem;
+  text-wrap: balance;
+}
+
+.project-heading {
+  min-height: 2.8rem;
+}
+
+.project-description {
+  min-height: 8.4rem;
+}
+
+.project-footer {
+  align-self: stretch;
+}
+
+.project-tech {
+  min-height: 3.6rem;
+  align-content: flex-start;
+}
+
+@media (max-width: 720px) {
+  .projects-header::after {
+    bottom: -1rem;
+  }
+
+  .project-body {
+    grid-template-rows: auto auto auto minmax(6.8rem, 1fr) auto;
+  }
+
+  .project-title {
+    min-height: auto;
+  }
+
+  .project-heading {
+    min-height: 2.5rem;
+  }
+
+  .project-description {
+    min-height: 7rem;
+  }
+}
+
+@keyframes projects-entry-bloom {
+  from {
+    opacity: 0.34;
+    transform: translateX(-50%) scaleX(0.9);
+  }
+  to {
+    opacity: 0.66;
+    transform: translateX(-50%) scaleX(1.05);
+  }
+}
+
+@keyframes projects-entry-line {
+  0%,
+  100% {
+    opacity: 0.2;
+    transform: translateX(-50%) scaleX(0.76);
+  }
+  44%,
+  58% {
+    opacity: 0.68;
+    transform: translateX(-50%) scaleX(1);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .projects-entry-veil::before,
+  .projects-entry-veil::after {
+    animation: none;
+  }
+}

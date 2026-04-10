@@ -1,0 +1,109 @@
+.about-skills-bridge {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: -1px;
+  z-index: 6;
+  height: min(28vh, 18rem);
+  pointer-events: none;
+  overflow: hidden;
+  background:
+    radial-gradient(ellipse at 50% 100%, rgba(177, 158, 239, 0.22), transparent 46%),
+    radial-gradient(ellipse at 72% 100%, rgba(3, 179, 195, 0.11), transparent 42%),
+    linear-gradient(180deg, transparent 0%, rgba(0, 0, 0, 0.44) 48%, #000 100%);
+}
+
+.about-skills-bridge::before {
+  content: "";
+  position: absolute;
+  inset: auto 0 0;
+  height: 7rem;
+  opacity: 0.34;
+  background:
+    repeating-linear-gradient(90deg, transparent 0 5.5%, rgba(177, 158, 239, 0.18) 5.8%, transparent 6.4% 12.8%, rgba(3, 179, 195, 0.12) 13.1%, transparent 13.8%);
+  mask-image: linear-gradient(180deg, transparent, #000 28%, #000 70%, transparent);
+  mix-blend-mode: screen;
+  animation: about-skills-grid 5.4s linear infinite;
+}
+
+.about-skills-bridge__aura {
+  position: absolute;
+  left: 50%;
+  bottom: -5rem;
+  width: min(52rem, 94vw);
+  height: 12rem;
+  transform: translateX(-50%);
+  border-radius: 50%;
+  background:
+    radial-gradient(ellipse, rgba(177, 158, 239, 0.24), transparent 64%),
+    radial-gradient(ellipse, rgba(3, 179, 195, 0.12), transparent 72%);
+  filter: blur(18px);
+  opacity: 0.85;
+  animation: about-skills-aura 7s ease-in-out infinite alternate;
+}
+
+.about-skills-bridge__line {
+  position: absolute;
+  left: 50%;
+  bottom: 1.35rem;
+  width: min(34rem, 72vw);
+  height: 1px;
+  transform: translateX(-50%);
+  background: linear-gradient(90deg, transparent, rgba(177, 158, 239, 0.72), rgba(3, 179, 195, 0.36), transparent);
+  opacity: 0.66;
+  box-shadow: 0 0 28px rgba(177, 158, 239, 0.24);
+  overflow: hidden;
+}
+
+.about-skills-bridge__line::after {
+  content: "";
+  position: absolute;
+  inset: -1px auto -1px 0;
+  width: 18%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.92), rgba(3, 179, 195, 0.72), transparent);
+  filter: blur(0.5px);
+  animation: about-skills-line-sweep 3s cubic-bezier(0.5, 0, 0.2, 1) infinite;
+}
+
+@keyframes about-skills-aura {
+  from {
+    opacity: 0.58;
+    transform: translateX(-50%) scaleX(0.92);
+  }
+  to {
+    opacity: 0.9;
+    transform: translateX(-50%) scaleX(1.06);
+  }
+}
+
+@keyframes about-skills-grid {
+  from {
+    background-position: 0 0;
+  }
+  to {
+    background-position: 18rem 0;
+  }
+}
+
+@keyframes about-skills-line-sweep {
+  0% {
+    transform: translateX(-120%);
+    opacity: 0;
+  }
+  18%,
+  72% {
+    opacity: 1;
+  }
+  100% {
+    transform: translateX(430%);
+    opacity: 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .about-skills-bridge::before,
+  .about-skills-bridge__line::after,
+  .about-skills-bridge__aura {
+    animation: none;
+  }
+}

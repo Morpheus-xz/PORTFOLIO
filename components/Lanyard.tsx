@@ -81,7 +81,7 @@ function Band({ maxSpeed = 50, minSpeed = 0, isMobile = false }) {
     j3 = useRef() as any,
     card = useRef() as any;
   const cardVisual = useRef<THREE.Group>(null);
-  const idleTime = useRef(Math.random() * 100);
+  const idleTime = useRef(0);
   const idleYaw = useRef(0);
   const idleYawInitialized = useRef(false);
   const vec = new THREE.Vector3(),
@@ -194,8 +194,11 @@ function Band({ maxSpeed = 50, minSpeed = 0, isMobile = false }) {
 
     if (cardVisual.current) {
       const t = idleTime.current;
-      const pop = 1 + Math.sin(t * 1.1) * 0.02 + Math.sin(t * 0.47 + 1.4) * 0.01;
-      cardVisual.current.scale.setScalar(cardBaseScale * pop);
+      const pop = 1 + Math.sin(t * 2.2 + 0.4) * 0.018 + Math.sin(t * 1.35 + 1.1) * 0.012;
+      const targetScale = cardBaseScale * pop;
+      const smooth = 1 - Math.exp(-delta * 8);
+      const nextScale = THREE.MathUtils.lerp(cardVisual.current.scale.x, targetScale, smooth);
+      cardVisual.current.scale.setScalar(nextScale);
     }
   });
 

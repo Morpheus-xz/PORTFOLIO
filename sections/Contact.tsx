@@ -19,18 +19,19 @@ const Contact: React.FC = () => {
     >
       <GhostCursor 
         color="#B19EEF"
-        brightness={isSafari ? 0.72 : 0.9}
-        trailLength={50}
-        inertia={0.5}
-        bloomStrength={isSafari ? 0.022 : 0.045}
-        bloomRadius={isSafari ? 0.45 : 0.65}
-        bloomThreshold={isSafari ? 0.2 : 0.14}
+        brightness={isSafari ? 0.68 : 0.82}
+        trailLength={32}
+        inertia={0.44}
+        bloomStrength={isSafari ? 0.016 : 0.032}
+        bloomRadius={isSafari ? 0.34 : 0.5}
+        bloomThreshold={isSafari ? 0.24 : 0.18}
         fadeDelayMs={1000}
         fadeDurationMs={1500}
         zIndex={1}
-        edgeIntensity={isSafari ? 0.1 : 0.15}
-        grainIntensity={isSafari ? 0.008 : 0.015}
-        maxDevicePixelRatio={isSafari ? 0.4 : 0.5}
+        edgeIntensity={isSafari ? 0.08 : 0.12}
+        grainIntensity={isSafari ? 0.006 : 0.01}
+        maxDevicePixelRatio={isSafari ? 0.3 : 0.35}
+        targetPixels={isSafari ? 600000 : 850000}
       />
       
       <div className="relative z-10 w-full max-w-6xl px-4 flex flex-col md:flex-row items-center justify-around gap-12 py-20">

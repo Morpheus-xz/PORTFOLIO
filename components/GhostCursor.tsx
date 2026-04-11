@@ -46,7 +46,7 @@ const GhostCursor: React.FC<GhostCursorProps> = ({
 
   edgeIntensity = 0.05,    // very subtle edge darkening
 
-  maxDevicePixelRatio = 0.5,// unchanged
+  maxDevicePixelRatio = 0.45,
 
   targetPixels,
 
@@ -78,8 +78,14 @@ const GhostCursor: React.FC<GhostCursorProps> = ({
     () => typeof window !== 'undefined' && ('ontouchstart' in window || navigator.maxTouchPoints > 0),
     []
   );
+  const isLowPowerDevice = useMemo(
+    () =>
+      typeof navigator !== 'undefined' &&
+      ((navigator.deviceMemory && navigator.deviceMemory <= 4) || navigator.hardwareConcurrency <= 4),
+    []
+  );
 
-  const pixelBudget = targetPixels ?? (isTouch ? 0.9e6 : 1.3e6);
+  const pixelBudget = targetPixels ?? (isLowPowerDevice ? 0.75e6 : isTouch ? 0.9e6 : 1.1e6);
   const fadeDelay = fadeDelayMs ?? (isTouch ? 500 : 1000);
   const fadeDuration = fadeDurationMs ?? (isTouch ? 1000 : 1500);
 
@@ -355,7 +361,7 @@ const GhostCursor: React.FC<GhostCursorProps> = ({
 
     const start = typeof performance !== 'undefined' ? performance.now() : Date.now();
     let lastRender = start;
-    const minFrameTime = isTouch ? 1000 / 36 : 1000 / 45;
+    const minFrameTime = isLowPowerDevice ? 1000 / 30 : isTouch ? 1000 / 36 : 1000 / 45;
     const animate = () => {
       const now = performance.now();
       const t = (now - start) / 1000;

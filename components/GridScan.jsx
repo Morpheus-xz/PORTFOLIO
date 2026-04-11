@@ -427,7 +427,7 @@ export const GridScan = ({
     const container = containerRef.current;
     if (!container) return;
 
-    const dprCap = perfRef.current.isLowPower ? 0.75 : 1;
+    const dprCap = perfRef.current.isLowPower ? 0.6 : 0.85;
     const renderer = new THREE.WebGLRenderer({
       antialias: false,
       alpha: true,
@@ -521,8 +521,8 @@ export const GridScan = ({
 
     let last = performance.now();
     let lastRender = 0;
-    const minFrameTimeVisible = perfRef.current.isLowPower ? 1000 / 32 : 1000 / 45;
-    const minFrameTimeOffscreen = perfRef.current.isLowPower ? 1000 / 12 : 1000 / 16;
+    const minFrameTimeVisible = perfRef.current.isLowPower ? 1000 / 26 : 1000 / 34;
+    const minFrameTimeOffscreen = perfRef.current.isLowPower ? 1000 / 8 : 1000 / 12;
 
     const tick = () => {
       const now = performance.now();

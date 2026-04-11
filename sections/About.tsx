@@ -4,7 +4,6 @@ import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import './About.css';
 
 const PixelBlast = React.lazy(() => import('../components/PixelBlast'));
-const Lanyard = React.lazy(() => import('../components/Lanyard'));
 
 const About: React.FC = () => {
   const containerRef = useRef<HTMLDivElement>(null!);
@@ -24,6 +23,15 @@ const About: React.FC = () => {
         duration: 1.2,
         stagger: 0.2,
         ease: "power3.out"
+      });
+
+      gsap.to(".about-photo-frame", {
+        y: -8,
+        rotateZ: 0.6,
+        duration: 2.8,
+        ease: "sine.inOut",
+        yoyo: true,
+        repeat: -1
       });
 
     }, containerRef);
@@ -70,13 +78,22 @@ const About: React.FC = () => {
 
       <div className="relative z-10 max-w-7xl mx-auto w-full grid grid-cols-1 md:grid-cols-12 gap-12 items-center">
 
-        {/* Lanyard 3D Container */}
-        <div className="md:col-span-5 flex justify-center about-reveal relative h-[50vh] md:h-[90vh] z-30 pointer-events-auto">
-          {loadEngine && (
-            <React.Suspense fallback={null}>
-              <Lanyard position={[0, 0, 20]} gravity={[0, -40, 0]} fov={20} />
-            </React.Suspense>
-          )}
+        {/* Profile Image Container */}
+        <div className="md:col-span-5 flex justify-center about-reveal relative h-[44vh] md:h-[74vh] z-30 pointer-events-auto">
+          <div className="about-photo-frame relative h-full w-full max-w-[300px] md:max-w-[350px]">
+            <div className="absolute -inset-5 rounded-[2.2rem] bg-[radial-gradient(circle_at_30%_20%,rgba(177,158,239,0.26),transparent_65%),radial-gradient(circle_at_75%_80%,rgba(3,179,195,0.18),transparent_70%)] blur-2xl opacity-80" />
+            <div className="relative h-full rounded-[1.8rem] border border-white/12 bg-gradient-to-b from-[#141024]/90 to-[#05050a]/95 p-2.5 shadow-[0_24px_72px_rgba(0,0,0,0.62)] transition-transform duration-500 hover:scale-[1.015]">
+              <div className="h-full overflow-hidden rounded-[1.45rem] border border-white/10 bg-black">
+                <img
+                  src="/profile.jpg"
+                  alt="Vedansh Agarwal"
+                  className="h-full w-full object-cover object-center transition-transform duration-700 hover:scale-[1.03]"
+                  loading="eager"
+                  decoding="async"
+                />
+              </div>
+            </div>
+          </div>
         </div>
 
         {/* Content */}

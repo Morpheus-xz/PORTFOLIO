@@ -250,7 +250,7 @@ const GhostCursor: React.FC<GhostCursorProps> = ({
     }
 
     const renderer = new THREE.WebGLRenderer({
-      antialias: !isTouch,
+      antialias: false,
       alpha: true,
       depth: false,
       stencil: false,
@@ -354,6 +354,8 @@ const GhostCursor: React.FC<GhostCursorProps> = ({
     ro.observe(host);
 
     const start = typeof performance !== 'undefined' ? performance.now() : Date.now();
+    let lastRender = start;
+    const minFrameTime = isTouch ? 1000 / 36 : 1000 / 45;
     const animate = () => {
       const now = performance.now();
       const t = (now - start) / 1000;
@@ -396,7 +398,10 @@ const GhostCursor: React.FC<GhostCursorProps> = ({
         filmPassRef.current.uniforms.iTime.value = t;
       }
 
-      comp.render();
+      if (now - lastRender >= minFrameTime) {
+        lastRender = now;
+        comp.render();
+      }
 
       if (!pointerActiveRef.current && fadeOpacityRef.current <= 0.001) {
         runningRef.current = false;
@@ -424,20 +429,17 @@ const GhostCursor: React.FC<GhostCursorProps> = ({
       ensureLoop();
     };
     const onPointerEnter = () => {
-      pointerActiveRef.current = true;
-      ensureLoop();
+      pointerActiveRef.current = false;
+      lastMoveTimeRef.current = performance.now();
     };
     const onPointerLeave = () => {
       pointerActiveRef.current = false;
       lastMoveTimeRef.current = performance.now();
-      ensureLoop();
     };
 
     parent.addEventListener('pointermove', onPointerMove, { passive: true });
     parent.addEventListener('pointerenter', onPointerEnter, { passive: true });
     parent.addEventListener('pointerleave', onPointerLeave, { passive: true });
-
-    ensureLoop();
 
     return () => {
       if (rafRef.current) cancelAnimationFrame(rafRef.current);

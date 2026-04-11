@@ -1,9 +1,8 @@
 
-import React, { useEffect, useRef } from 'react';
+import React, { useMemo, useRef } from 'react';
 import { ExternalLink, Terminal, Image as ImageIcon } from 'lucide-react';
 import './Projects.css';
-
-const FaultyTerminal = React.lazy(() => import('../components/FaultyTerminal'));
+import GridScan from '../components/GridScan';
 
 const projects = [
   {
@@ -34,39 +33,21 @@ const projects = [
 
 const Projects: React.FC = () => {
   const containerRef = useRef<HTMLDivElement>(null);
-  const [loadEngine, setLoadEngine] = React.useState(false);
-  const [isVisible, setIsVisible] = React.useState(false);
-
-  useEffect(() => {
-    const section = containerRef.current;
-    if (!section) return;
-
-    let timer: number | null = null;
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        if (!entry.isIntersecting) return;
-        timer = window.setTimeout(() => setLoadEngine(true), 200);
-        observer.disconnect();
-      },
-      { rootMargin: '300px' }
-    );
-
-    observer.observe(section);
-    return () => {
-      observer.disconnect();
-      if (timer) window.clearTimeout(timer);
-    };
-  }, []);
-
-  // Performance: Pause heavy WebGL canvas when user scrolls past Projects
-  useEffect(() => {
-    const observer = new IntersectionObserver(
-      ([entry]) => setIsVisible(entry.isIntersecting),
-      { rootMargin: '300px 0px', threshold: 0 }
-    );
-    if (containerRef.current) observer.observe(containerRef.current);
-    return () => observer.disconnect();
-  }, []);
+  const gridScanOptions = useMemo(
+    () => ({
+      sensitivity: 0.55,
+      lineThickness: 1,
+      linesColor: '#392e4e',
+      gridScale: 0.1,
+      scanColor: '#FF9FFC',
+      scanOpacity: 0.4,
+      enablePost: true,
+      bloomIntensity: 0.6,
+      chromaticAberration: 0.002,
+      noiseIntensity: 0.01
+    }),
+    []
+  );
 
   return (
     <section
@@ -74,36 +55,11 @@ const Projects: React.FC = () => {
       ref={containerRef}
       className="projects-section relative w-full flex flex-col items-center py-24 md:py-32 overflow-hidden bg-black"
     >
-      {/* Heavy WebGL Background */}
-      <div className={`absolute inset-0 z-0 transition-opacity duration-1000 will-change-transform pointer-events-none ${loadEngine ? 'opacity-72' : 'opacity-0'}`}>
-        {loadEngine && (
-          <React.Suspense fallback={null}>
-            <FaultyTerminal
-              scale={2.1}
-              dpr={1}
-              gridMul={[2, 1]}
-              digitSize={1.2}
-              timeScale={0.5}
-              pause={!isVisible}
-              scanlineIntensity={0.5}
-              glitchAmount={1}
-              flickerAmount={1}
-              noiseAmp={1}
-              chromaticAberration={0}
-              dither={0}
-              curvature={0.1}
-              tint="#ffffff"
-              mouseReact
-              mouseStrength={2}
-              pageLoadAnimation
-              brightness={0.6}
-            />
-          </React.Suspense>
-        )}
+      <div className="projects-gridscan-canvas absolute inset-0 z-0 pointer-events-none opacity-100">
+        <GridScan {...gridScanOptions} />
       </div>
-      <div className="projects-surface" aria-hidden="true" />
-      <div className="projects-entry-veil" aria-hidden="true" />
-
+      <div className="projects-bg-fallback" aria-hidden="true" />
+      <div className="projects-gridscan-veil" aria-hidden="true" />
       <div className="relative z-10 w-full max-w-[90rem] px-6 md:px-12 flex flex-col pt-12 items-center">
 
         {/* Centered Header */}
@@ -120,15 +76,14 @@ const Projects: React.FC = () => {
           </p>
         </div>
 
-        {/* Compact 3-Column Grid */}
-        <div className="projects-grid w-full grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8 pb-24">
+        <div className="projects-grid w-full grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5 md:gap-6 pb-24">
           {projects.map((project, idx) => (
             <div
               key={idx}
-              className="project-card group relative w-full flex flex-col rounded-2xl border border-white/12 bg-[#050508]/96 shadow-[0_20px_50px_-10px_rgba(0,0,0,0.72)] overflow-hidden transition-all duration-500 hover:border-[#B19EEF]/32 hover:shadow-[0_0_28px_rgba(177,158,239,0.1)] hover:-translate-y-1 z-10"
+              className="project-card group relative w-full flex flex-col overflow-hidden transition-all duration-500 z-10"
             >
               {/* Image Header (Top Section) */}
-              <div className="project-image-wrap w-full relative h-[200px] sm:h-[240px] overflow-hidden border-b border-white/10 bg-[#0A0A0F]">
+              <div className="project-image-wrap w-full relative h-[200px] sm:h-[230px] overflow-hidden">
                 <img
                   src={project.image}
                   alt={project.title}
@@ -145,11 +100,11 @@ const Projects: React.FC = () => {
                 </div>
 
                 {/* Fade into the lower dark section */}
-                <div className="absolute inset-x-0 bottom-0 h-24 bg-gradient-to-t from-[#050508] to-transparent pointer-events-none z-10" />
+                <div className="absolute inset-x-0 bottom-0 h-24 bg-gradient-to-t from-black/40 to-transparent pointer-events-none z-10" />
               </div>
 
               {/* Content Body (Bottom Section) */}
-              <div className="project-body w-full p-6 md:p-8 flex flex-col flex-1 relative z-20 bg-[#050508]/94">
+              <div className="project-body w-full p-6 md:p-7 flex flex-col flex-1 relative z-20">
                 <div className="project-meta flex items-center gap-2 mb-4">
                   <Terminal size={14} className="text-[#03b3c3]" />
                   <span className="font-mono text-[10px] tracking-[0.28em] uppercase text-[#B19EEF]">
@@ -175,7 +130,7 @@ const Projects: React.FC = () => {
                     {project.techStack.map((tech, i) => (
                       <span
                         key={i}
-                        className="px-2 py-1 bg-black/80 border border-white/10 text-[9px] sm:text-[10px] font-mono text-white/62 tracking-[0.18em] uppercase rounded hover:border-white/24 hover:text-white transition-colors"
+                        className="px-2 py-1 bg-black/25 border border-white/12 text-[9px] sm:text-[10px] font-mono text-white/70 tracking-[0.18em] uppercase rounded-md hover:border-white/28 hover:text-white transition-colors"
                       >
                         {tech}
                       </span>
@@ -187,7 +142,7 @@ const Projects: React.FC = () => {
                     href={project.link}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="w-full flex items-center justify-center gap-2 px-4 py-3 sm:py-4 rounded-xl bg-white/5 border border-white/10 text-white hover:bg-white hover:text-black transition-all duration-300 group/btn"
+                    className="w-full flex items-center justify-center gap-2 px-4 py-3 sm:py-4 rounded-xl bg-white/8 border border-white/16 text-white hover:bg-white hover:text-black transition-all duration-300 group/btn backdrop-blur-sm"
                   >
                     <span className="font-bold text-[10px] md:text-xs tracking-widest uppercase">
                       View Project

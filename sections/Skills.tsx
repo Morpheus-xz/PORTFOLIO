@@ -17,8 +17,8 @@ const MODULUS = Math.pow(2, 31);
 const SkillsSignalCanvas: React.FC = () => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const rafRef = useRef<number | null>(null);
-  const visibleRef = useRef(true);
   const lastFrameRef = useRef(0);
+  const inViewRef = useRef(true);
 
   React.useEffect(() => {
     const canvas = canvasRef.current;
@@ -50,12 +50,8 @@ const SkillsSignalCanvas: React.FC = () => {
     };
 
     const frame = (frameTime: number) => {
-      if (!visibleRef.current) {
-        rafRef.current = requestAnimationFrame(frame);
-        return;
-      }
-
-      if (frameTime - lastFrameRef.current < 1000 / 60) {
+      const targetFrameTime = inViewRef.current ? 1000 / 45 : 1000 / 14;
+      if (frameTime - lastFrameRef.current < targetFrameTime) {
         rafRef.current = requestAnimationFrame(frame);
         return;
       }
@@ -102,8 +98,10 @@ const SkillsSignalCanvas: React.FC = () => {
 
     const resizeObserver = new ResizeObserver(resize);
     const visibilityObserver = new IntersectionObserver(
-      ([entry]) => { visibleRef.current = entry.isIntersecting; },
-      { rootMargin: '200px' }
+      ([entry]) => {
+        inViewRef.current = entry.isIntersecting;
+      },
+      { rootMargin: '400px 0px' }
     );
 
     resizeObserver.observe(parent);

@@ -1,11 +1,10 @@
 
-import React, { useEffect, useState, useRef } from 'react';
+import React, { useCallback, useEffect, useState, useRef } from 'react';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import Lenis from '@studio-freight/lenis';
 import Loader from './components/Loader';
 import Navbar from './components/Navbar';
-import SplashCursor from './components/SplashCursor';
 import Hero from './sections/Hero';
 import About from './sections/About';
 import Skills from './sections/Skills';
@@ -16,8 +15,11 @@ import Contact from './sections/Contact';
 gsap.registerPlugin(ScrollTrigger);
 
 const App: React.FC = () => {
-  const [loading, setLoading] = useState(true);
+  const [showLoader, setShowLoader] = useState(true);
+  const [appVisible, setAppVisible] = useState(false);
   const lenisRef = useRef<Lenis | null>(null);
+  const handleRevealApp = useCallback(() => setAppVisible(true), []);
+  const handleLoaderComplete = useCallback(() => setShowLoader(false), []);
 
   useEffect(() => {
     // 1. Clear scroll memory on mount
@@ -40,24 +42,30 @@ const App: React.FC = () => {
     lenisRef.current = lenis;
     (window as any).lenis = lenis;
 
-    // 3. Sync ScrollTrigger with Lenis
+    // 3. Keep GSAP from catch-up bursts after dropped frames (prevents jumpy scroll)
+    gsap.ticker.lagSmoothing(0);
+
+    // 4. Sync ScrollTrigger with Lenis
     lenis.on('scroll', ScrollTrigger.update);
 
-    // 4. Drive Lenis with GSAP Ticker
-    const tickerUpdate = (time: number) => {
-      // GSAP Ticker 'time' is in seconds, Lenis 'raf' expects milliseconds
-      lenis.raf(time * 1000);
+    // 5. Drive Lenis with a dedicated RAF loop for steadier frame pacing
+    let rafId: number;
+    const raf = (time: number) => {
+      lenis.raf(time);
+      rafId = window.requestAnimationFrame(raf);
     };
+    rafId = window.requestAnimationFrame(raf);
 
-    gsap.ticker.add(tickerUpdate);
-
-    // 5. Global ScrollTrigger defaults
+    // 6. Global ScrollTrigger defaults
     ScrollTrigger.defaults({
       scroller: window,
     });
+    ScrollTrigger.config({
+      ignoreMobileResize: true,
+    });
 
     return () => {
-      gsap.ticker.remove(tickerUpdate);
+      window.cancelAnimationFrame(rafId);
       lenis.destroy();
       lenisRef.current = null;
       (window as any).lenis = null;
@@ -66,7 +74,7 @@ const App: React.FC = () => {
 
   // Handle ScrollTrigger refreshing after loading and on resize
   useEffect(() => {
-    if (!loading) {
+    if (appVisible) {
       // Refresh ScrollTrigger after a short delay to ensure DOM is ready
       const timer = setTimeout(() => {
         ScrollTrigger.refresh();
@@ -79,33 +87,35 @@ const App: React.FC = () => {
         clearTimeout(timer);
       };
     }
-  }, [loading]);
+  }, [appVisible]);
 
   return (
     <main className="bg-black text-[#F5F5F5] selection:bg-[#2D1B4E] selection:text-white min-h-screen antialiased">
-      {loading && <Loader onComplete={() => setLoading(false)} />}
+      {showLoader && (
+        <Loader
+          onRevealApp={handleRevealApp}
+          onComplete={handleLoaderComplete}
+        />
+      )}
 
-      {!loading && (
-        <div className="relative z-10 w-full">
-          <SplashCursor
-            SIM_RESOLUTION={96}
-            DYE_RESOLUTION={1024}
-            PRESSURE_ITERATIONS={16}
-            SPLAT_FORCE={5200}
-            MAX_PIXEL_RATIO={1}
-            TARGET_FPS={55}
-          />
-          <Navbar />
-          <div id="smooth-wrapper">
-            <Hero />
-            <About />
-            <Skills />
-            <Certifications />
-            <Projects />
-          </div>
+      <div
+        className={`relative z-10 w-full transition-[opacity,transform,filter] duration-700 ease-[cubic-bezier(0.22,1,0.36,1)] ${
+          !appVisible
+            ? 'opacity-0 pointer-events-none scale-[1.045] blur-[2px]'
+            : 'opacity-100 scale-100 blur-0'
+        }`}
+        aria-hidden={!appVisible}
+      >
+        <Navbar />
+        <div id="smooth-wrapper">
+          <Hero />
+          <About />
+          <Skills />
+          <Certifications />
+          <Projects />
           <Contact />
         </div>
-      )}
+      </div>
     </main>
   );
 };

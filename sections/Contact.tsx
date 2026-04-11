@@ -1,33 +1,14 @@
 
 import React from 'react';
 import ProfileCard from '../components/ProfileCard';
-
-const GhostCursor = React.lazy(() => import('../components/GhostCursor'));
+import GhostCursor from '../components/GhostCursor';
 
 const Contact: React.FC = () => {
   const sectionRef = React.useRef<HTMLElement>(null);
-  const [loadCursor, setLoadCursor] = React.useState(false);
   const isSafari = React.useMemo(() => {
     if (typeof navigator === 'undefined') return false;
     const ua = navigator.userAgent;
     return /Safari/i.test(ua) && !/Chrome|CriOS|Edg|OPR|FxiOS/i.test(ua);
-  }, []);
-
-  React.useEffect(() => {
-    const section = sectionRef.current;
-    if (!section) return;
-
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        if (!entry.isIntersecting) return;
-        setLoadCursor(true);
-        observer.disconnect();
-      },
-      { rootMargin: '300px' }
-    );
-
-    observer.observe(section);
-    return () => observer.disconnect();
   }, []);
 
   return (
@@ -36,25 +17,21 @@ const Contact: React.FC = () => {
       ref={sectionRef}
       className="relative min-h-screen w-full flex flex-col items-center justify-center bg-black overflow-hidden"
     >
-      {loadCursor && (
-        <React.Suspense fallback={null}>
-          <GhostCursor 
-            color="#B19EEF"
-            brightness={isSafari ? 0.72 : 0.9}
-            trailLength={50}
-            inertia={0.5}
-            bloomStrength={isSafari ? 0.022 : 0.045}
-            bloomRadius={isSafari ? 0.45 : 0.65}
-            bloomThreshold={isSafari ? 0.2 : 0.14}
-            fadeDelayMs={1000}
-            fadeDurationMs={1500}
-            zIndex={1}
-            edgeIntensity={isSafari ? 0.1 : 0.15}
-            grainIntensity={isSafari ? 0.008 : 0.015}
-            maxDevicePixelRatio={isSafari ? 0.4 : 0.5}
-          />
-        </React.Suspense>
-      )}
+      <GhostCursor 
+        color="#B19EEF"
+        brightness={isSafari ? 0.72 : 0.9}
+        trailLength={50}
+        inertia={0.5}
+        bloomStrength={isSafari ? 0.022 : 0.045}
+        bloomRadius={isSafari ? 0.45 : 0.65}
+        bloomThreshold={isSafari ? 0.2 : 0.14}
+        fadeDelayMs={1000}
+        fadeDurationMs={1500}
+        zIndex={1}
+        edgeIntensity={isSafari ? 0.1 : 0.15}
+        grainIntensity={isSafari ? 0.008 : 0.015}
+        maxDevicePixelRatio={isSafari ? 0.4 : 0.5}
+      />
       
       <div className="relative z-10 w-full max-w-6xl px-4 flex flex-col md:flex-row items-center justify-around gap-12 py-20">
         <div className="relative z-30 max-w-md rounded-2xl border border-white/10 bg-black/35 px-6 py-7 text-center md:text-left pointer-events-auto backdrop-blur-md shadow-[0_20px_70px_rgba(0,0,0,0.55)]">

@@ -3,32 +3,52 @@ import React, { useEffect, useRef, useState } from 'react';
 import { gsap } from 'gsap';
 
 interface LoaderProps {
+  onRevealApp: () => void;
   onComplete: () => void;
 }
 
-const Loader: React.FC<LoaderProps> = ({ onComplete }) => {
+const Loader: React.FC<LoaderProps> = ({ onRevealApp, onComplete }) => {
   const counterRef = useRef<HTMLDivElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
+  const completionTriggeredRef = useRef(false);
   const [count, setCount] = useState(0);
 
   useEffect(() => {
     const ctx = gsap.context(() => {
-      // Counter animation
       const obj = { value: 0 };
       gsap.to(obj, {
         value: 100,
-        duration: 2.5,
-        ease: "power2.inOut",
+        duration: 3.8,
+        ease: "power1.inOut",
         onUpdate: () => {
           setCount(Math.floor(obj.value));
         },
         onComplete: () => {
-          onComplete();
+          if (completionTriggeredRef.current) return;
+          completionTriggeredRef.current = true;
+
+          // Start app reveal exactly when loader exit starts.
+          onRevealApp();
+
+          const tl = gsap.timeline();
+          tl.to(counterRef.current, {
+            scale: 0.82,
+            opacity: 0,
+            filter: 'blur(6px)',
+            duration: 0.55,
+            ease: "power3.inOut"
+          }, 0);
+          tl.to(containerRef.current, {
+            opacity: 0,
+            duration: 0.55,
+            ease: "power3.inOut"
+          }, 0.04);
+          tl.call(() => onComplete());
         }
       });
     });
     return () => ctx.revert();
-  }, [onComplete]);
+  }, [onComplete, onRevealApp]);
 
   return (
     <div 

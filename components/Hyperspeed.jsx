@@ -841,7 +841,7 @@ const Hyperspeed = ({ effectOptions = DEFAULT_EFFECT_OPTIONS }) => {
 
     const carLightsFragment = `
       #define USE_FOG;
-      \${THREE.ShaderChunk['fog_pars_fragment']}
+      ${THREE.ShaderChunk['fog_pars_fragment']}
       varying vec3 vColor;
       varying vec2 vUv; 
       uniform vec2 uFade;
@@ -850,13 +850,13 @@ const Hyperspeed = ({ effectOptions = DEFAULT_EFFECT_OPTIONS }) => {
         float alpha = smoothstep(uFade.x, uFade.y, vUv.x);
         gl_FragColor = vec4(color, alpha);
         if (gl_FragColor.a < 0.0001) discard;
-        \${THREE.ShaderChunk['fog_fragment']}
+        ${THREE.ShaderChunk['fog_fragment']}
       }
     `;
 
     const carLightsVertex = `
       #define USE_FOG;
-      \${THREE.ShaderChunk['fog_pars_vertex']}
+      ${THREE.ShaderChunk['fog_pars_vertex']}
       attribute vec3 aOffset;
       attribute vec3 aMetrics;
       attribute vec3 aColor;
@@ -884,7 +884,7 @@ const Hyperspeed = ({ effectOptions = DEFAULT_EFFECT_OPTIONS }) => {
         gl_Position = projectionMatrix * mvPosition;
         vUv = uv;
         vColor = aColor;
-        \${THREE.ShaderChunk['fog_vertex']}
+        ${THREE.ShaderChunk['fog_vertex']}
       }
     `;
 
@@ -966,7 +966,7 @@ const Hyperspeed = ({ effectOptions = DEFAULT_EFFECT_OPTIONS }) => {
 
     const sideSticksVertex = `
       #define USE_FOG;
-      \${THREE.ShaderChunk['fog_pars_vertex']}
+      ${THREE.ShaderChunk['fog_pars_vertex']}
       attribute float aOffset;
       attribute vec3 aColor;
       attribute vec2 aMetrics;
@@ -1000,18 +1000,18 @@ const Hyperspeed = ({ effectOptions = DEFAULT_EFFECT_OPTIONS }) => {
         vec4 mvPosition = modelViewMatrix * vec4(transformed, 1.);
         gl_Position = projectionMatrix * mvPosition;
         vColor = aColor;
-        \${THREE.ShaderChunk['fog_vertex']}
+        ${THREE.ShaderChunk['fog_vertex']}
       }
     `;
 
     const sideSticksFragment = `
       #define USE_FOG;
-      \${THREE.ShaderChunk['fog_pars_fragment']}
+      ${THREE.ShaderChunk['fog_pars_fragment']}
       varying vec3 vColor;
       void main(){
         vec3 color = vec3(vColor);
         gl_FragColor = vec4(color,1.);
-        \${THREE.ShaderChunk['fog_fragment']}
+        ${THREE.ShaderChunk['fog_fragment']}
       }
     `;
 
@@ -1088,13 +1088,13 @@ const Hyperspeed = ({ effectOptions = DEFAULT_EFFECT_OPTIONS }) => {
       uniform vec3 uColor;
       uniform float uTime;
       #include <roadMarkings_vars>
-      \${THREE.ShaderChunk['fog_pars_fragment']}
+      ${THREE.ShaderChunk['fog_pars_fragment']}
       void main() {
         vec2 uv = vUv;
         vec3 color = vec3(uColor);
         #include <roadMarkings_fragment>
         gl_FragColor = vec4(color, 1.);
-        \${THREE.ShaderChunk['fog_fragment']}
+        ${THREE.ShaderChunk['fog_fragment']}
       }
     `;
 
@@ -1138,7 +1138,7 @@ const Hyperspeed = ({ effectOptions = DEFAULT_EFFECT_OPTIONS }) => {
     const roadVertex = `
       #define USE_FOG;
       uniform float uTime;
-      \${THREE.ShaderChunk['fog_pars_vertex']}
+      ${THREE.ShaderChunk['fog_pars_vertex']}
       uniform float uTravelLength;
       varying vec2 vUv; 
       #include <getDistortion_vertex>
@@ -1152,7 +1152,7 @@ const Hyperspeed = ({ effectOptions = DEFAULT_EFFECT_OPTIONS }) => {
         vec4 mvPosition = modelViewMatrix * vec4(transformed, 1.);
         gl_Position = projectionMatrix * mvPosition;
         vUv = uv;
-        \${THREE.ShaderChunk['fog_vertex']}
+        ${THREE.ShaderChunk['fog_vertex']}
       }
     `;
 

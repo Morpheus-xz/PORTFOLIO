@@ -1,5 +1,5 @@
 
-import React, { useCallback, useEffect, useState, useRef } from 'react';
+import React, { useCallback, useEffect, useLayoutEffect, useState, useRef } from 'react';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import Lenis from '@studio-freight/lenis';
@@ -20,6 +20,11 @@ const App: React.FC = () => {
   const lenisRef = useRef<Lenis | null>(null);
   const handleRevealApp = useCallback(() => setAppVisible(true), []);
   const handleLoaderComplete = useCallback(() => setShowLoader(false), []);
+
+  useLayoutEffect(() => {
+    const bootSplash = document.getElementById('boot-splash');
+    if (bootSplash) bootSplash.remove();
+  }, []);
 
   useEffect(() => {
     // 1. Clear scroll memory on mount
